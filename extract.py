@@ -1,43 +1,63 @@
 # from _typeshed import NoneType
+import pandas as pd
 import polars as pl
 import duckdb as duck
 import prefect
-import pprint
-from influxdb_client_3 import InfluxDBClient3
+from pprint import pprint
+from influxdb_client_3 import InfluxDBClient3, Point
 from pymongo import MongoClient, mongo_client
 from datetime import datetime
 
 
 data = pl.read_csv("./iot_telemetry_data.csv")
-##########################################################
-# data.insert_column(
-#     data.shape[1], pl.Series("time", [datetime.now() for _ in range(data.shape[0])])
-# )
-# print(data.columns, data)
-# client = InfluxDBClient3(host="localhost", port="8086", org="my-org", username="dtome")
-
-# client._write_api.write(
-#     bucket="environment",
-#     record=data,
-#     data_frame_measurement="motion",
-#     data_frame_timestamp_column="time",
-# )
-# queryselect = "select * from motion"
-# reader = client.query(query=queryselect, language="sql")
-# table = reader.read_all()
-# print(table.to_pandas())
-# db.create_database
-
-##########################################################
-# from google.cloud import bigquery
-# from dotenv import dotenv_values
-# from fastapi import FastAPI
-
+# data = data.set_index("id")
+pprint(data)
 dataDicts = data.to_dicts()
 client = MongoClient()
 db = client["test-database"]
 post = {"time": datetime.now(), "name": "user"}
 posts = db.table
-# post_id = posts.insert_many(dataDicts).inserted_ids
-pprint.pprint(_)
+# for row in dataDicts:
+# query = {"_id": row["device"]}
+# update = {"$set": row}
+# posts.update_many(query, update, upsert=True)
+# post_id = posts.update_many({"id": "id"}, dataDicts)
+# pprint(data.null_count().sum().max())
+pprint(posts.find()[405185])
 print(posts.count_documents({}))
+# def load():
+#     try:
+#        db = client["database"]
+#        data_dict = data.to_dicts()
+#        commit = db.data
+#        commit_id = commit.insert_many(data_dict).inserted_ids
+
+#     except:
+
+"""
+import pandas as pd
+from pymongo import MongoClient
+
+def load_data():
+    # Read sensor data from a CSV file
+    df = pd.read_csv('data/sensor_data.csv')
+    
+    # Simple transformation: forward fill missing values
+    df.fillna(method='ffill', inplace=True)
+    
+    # Establish connection to MongoDB
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client['sensor_db']
+    collection = db['readings']
+    
+    # Convert DataFrame to dictionary records and load in batches
+    records = df.to_dict(orient='records')
+    batch_size = 1000
+    for i in range(0, len(records), batch_size):
+        collection.insert_many(records[i:i+batch_size])
+    
+    print("Data loaded successfully.")
+
+if __name__ == '__main__':
+    load_data()
+"""
