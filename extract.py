@@ -1,63 +1,70 @@
-# from _typeshed import NoneType
 import pandas as pd
-import polars as pl
-import duckdb as duck
 import prefect
 from pprint import pprint
-from influxdb_client_3 import InfluxDBClient3, Point
-from pymongo import MongoClient, mongo_client
+from pymongo import MongoClient, mongo_client, UpdateOne
 from datetime import datetime
 
 
-data = pl.read_csv("./iot_telemetry_data.csv")
-# data = data.set_index("id")
-pprint(data)
-dataDicts = data.to_dicts()
-client = MongoClient()
-db = client["test-database"]
 post = {"time": datetime.now(), "name": "user"}
-posts = db.table
-# for row in dataDicts:
-# query = {"_id": row["device"]}
-# update = {"$set": row}
-# posts.update_many(query, update, upsert=True)
-# post_id = posts.update_many({"id": "id"}, dataDicts)
-# pprint(data.null_count().sum().max())
-pprint(posts.find()[405185])
-print(posts.count_documents({}))
-# def load():
-#     try:
-#        db = client["database"]
-#        data_dict = data.to_dicts()
-#        commit = db.data
-#        commit_id = commit.insert_many(data_dict).inserted_ids
 
-#     except:
+# Extract data into a dataframe
+data = pd.read_csv("./iot_telemetry_data.csv")
+data["id"] = range(data.shape[0])
+data_dicts = data.to_dict("records")
 
-"""
-import pandas as pd
-from pymongo import MongoClient
 
-def load_data():
-    # Read sensor data from a CSV file
-    df = pd.read_csv('data/sensor_data.csv')
-    
-    # Simple transformation: forward fill missing values
-    df.fillna(method='ffill', inplace=True)
-    
-    # Establish connection to MongoDB
-    client = MongoClient('mongodb://localhost:27017/')
-    db = client['sensor_db']
-    collection = db['readings']
-    
-    # Convert DataFrame to dictionary records and load in batches
-    records = df.to_dict(orient='records')
+# Check if data is in database
+def check():
+    res = False
+    table = connection()
+    if table.count_documents({}) > 1:
+        res = True
+    return res
+
+
+# Connect to the database
+def connection():
+    # Using default settings
+    client = MongoClient()
+    db = client["test-database"]
+    table = db.table
+    return table
+
+
+# Initial Loading
+def load():
+    table = connection()
+    table.delete_many({})
+    table_id = table.insert_many(data_dicts)
+    print(f"Successfully loaded {table.count_documents({})} entries added")
+
+
+# Update the database
+def update():
+    table = connection()
     batch_size = 1000
-    for i in range(0, len(records), batch_size):
-        collection.insert_many(records[i:i+batch_size])
-    
-    print("Data loaded successfully.")
+    operations = []
 
-if __name__ == '__main__':
-    load_data()
-"""
+    # Prepare bulk operations
+    for data_dict in data_dicts:  # Assuming data_dicts is a list of update documents
+        operations.append(
+            UpdateOne(
+                {"_id": data_dict["id"]},  # Use appropriate ID field
+                {"$set": data_dict},  # Update with document data
+                upsert=True,  # Adds new values
+            )
+        )
+
+        # Execute in batches
+        if len(operations) == batch_size:
+            table.bulk_write(operations, ordered=False)
+            operations = []
+
+        # Process remaining operations
+    if operations:
+        table.bulk_write(operations, ordered=False)
+
+    print(f"Successfully processed {len(data_dicts)} documents")
+
+
+update()
