@@ -25,7 +25,7 @@ def check():
 # Connect to the database
 def connection():
     # Using default settings
-    client = MongoClient()
+    client = MongoClient("mongodb://mongo:27017/")
     db = client["test-database"]
     table = db.table
     return table
