@@ -3,6 +3,7 @@
 # We use the keyword 'FROM' to do that.
 # In our example, we want import the python image.
 # So we write 'python' for the image name and 'latest' for the version.
+From mongo:latest
 FROM alpine:latest
 RUN apk add python3 uv gcc musl-dev python3-dev libffi-dev openssl-dev 
 COPY pyproject.toml ./
@@ -18,4 +19,5 @@ COPY ./iot_telemetry_data.csv ./
 # We need to define the command to launch when we are going to run the image.
 # We use the keyword 'CMD' to do that.
 # The following command will execute "python ./main.py".
+CMD ["mongo"]
 CMD [ "uv","run", "./extract.py" ]
