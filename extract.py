@@ -17,7 +17,7 @@ data_dicts = data.to_dict("records")
 def check():
     res = False
     table = connection()
-    if table.count_documents({}) > 1:
+    if table.count_documents({}) > 0:
         res = True
     return res
 
@@ -25,7 +25,7 @@ def check():
 # Connect to the database
 def connection():
     # Using default settings
-    client = MongoClient("mongodb://mongo:27017/")
+    client = MongoClient()
     db = client["test-database"]
     table = db.table
     return table

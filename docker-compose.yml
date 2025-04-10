@@ -12,6 +12,10 @@ services:
       - app-network
     command: ["uv", "run", "./extract.py"]
 
+  prefect:
+    image: .
+    command: ["uv","run","prefect","server","start"]
+
   mongo:
     image: mongo:latest
     container_name: mongo-db

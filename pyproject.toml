@@ -1,5 +1,5 @@
 [project]
-name = "etlbasics"
+name = "DataEngineering"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -10,3 +10,6 @@ dependencies = [
     "pandas>=2.2.3",
     "pymongo[srv]>=4.11.3",
 ]
+
+[tool.uv.workspace]
+members = ["DataEngineering"]

@@ -12,7 +12,7 @@ def initial_load():
 
 @task
 def update_db():
-    check
+    update()
 
 
 @flow()
