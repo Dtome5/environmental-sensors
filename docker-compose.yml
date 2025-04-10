@@ -1,19 +1,11 @@
 version: '3.9'
 
 services:
-  app:
+  prefect:
     build: .
-    container_name: python-app
-    depends_on:
-      - mongo
-    volumes:
-      - .:/app
+    container_name: prefect
     networks:
       - app-network
-    command: ["uv", "run", "./extract.py"]
-
-  prefect:
-    image: .
     command: ["uv","run","prefect","server","start"]
 
   mongo:
@@ -25,6 +17,17 @@ services:
       - app-network
     volumes:
       - mongo-data:/data/db
+
+  app:
+    build: .
+    container_name: python-app
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app
+    networks:
+      - app-network
+    command: ["uv", "run", "./extract.py"]
 
 volumes:
   mongo-data:
