@@ -4,7 +4,7 @@ from airflow.operators.python import PythonOperator, BranchPythonOperator
 from extract import load, update, check
 
 default_args = {
-    "owner": "airflow",
+    "owner": "airflo",
     "depends_on_past": False,
     "start_date": datetime(2023, 1, 1),
     "retries": 1,

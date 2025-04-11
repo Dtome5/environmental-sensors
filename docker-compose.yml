@@ -1,13 +1,6 @@
 version: '3.9'
 
 services:
-  prefect:
-    build: .
-    container_name: prefect
-    networks:
-      - app-network
-    command: ["uv","run","prefect","server","start"]
-
   mongo:
     image: mongo:latest
     container_name: mongo-db
