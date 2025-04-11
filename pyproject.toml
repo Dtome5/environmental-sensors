@@ -9,6 +9,7 @@ dependencies = [
     "prefect>=3.2.11",
     "pandas>=2.2.3",
     "pymongo[srv]>=4.11.3",
+    "pip>=25.0.1",
 ]
 
 [tool.uv.workspace]
