@@ -1,20 +1,6 @@
 version: '3.9'
 
 services:
-  prefect:
-    build: .
-    container_name: prefect
-    environment:
-      - PREFECT_API_URL=http://127.0.0.1:4200/api
-    ports:
-      - "4200:4200"
-    networks:
-      - app-network
-    volumes:
-      - .:/app
-    command: ["prefect", "server","start","--port","4200"]
-
-    
   mongo:
     image: mongo:latest
     container_name: mongo-db
@@ -38,7 +24,7 @@ services:
     volumes:
       - .:/app
     working_dir: /app
-    command: ["python", "schedule.py"]
+    command: ["python", "launch.py"]
 
 volumes:
   mongo-data:
