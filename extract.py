@@ -100,35 +100,38 @@ def load():
 
 # Update the database
 def update():
-    # try:
-    table = connection()
-    if table is not None:
-        batch_size = 1000
-        operations = []
+    try:
+        table = connection()
+        if table is not None:
+            batch_size = 1000
+            operations = []
 
-        # Prepare bulk operations
-        for (
-            data_dict
-        ) in data_dicts:  # Assuming data_dicts is a list of update documents
-            operations.append(
-                UpdateOne(
-                    {
-                        "_id": {"ts": data_dict["ts"], "device": data_dict["device"]}
-                    },  # Use appropriate ID field
-                    {"$set": data_dict},  # Update with document data
-                    upsert=True,  # Adds new values
+            # Prepare bulk operations
+            for (
+                data_dict
+            ) in data_dicts:  # Assuming data_dicts is a list of update documents
+                operations.append(
+                    UpdateOne(
+                        {
+                            "_id": {
+                                "ts": data_dict["ts"],
+                                "device": data_dict["device"],
+                            }
+                        },  # Use appropriate ID field
+                        {"$set": data_dict},  # Update with document data
+                        upsert=True,  # Adds new values
+                    )
                 )
-            )
 
-            # Execute in batches
-            if len(operations) == batch_size:
+                # Execute in batches
+                if len(operations) == batch_size:
+                    table.bulk_write(operations, ordered=False)
+                    operations = []
+
+                # Process remaining operations
+            if operations:
                 table.bulk_write(operations, ordered=False)
-                operations = []
 
-            # Process remaining operations
-        if operations:
-            table.bulk_write(operations, ordered=False)
-
-        print(f"Successfully processed {len(data_dicts)} documents")
-        # except Exception:
+            print(f"Successfully processed {len(data_dicts)} documents")
+    except Exception as e:
         print("Error updating the database")
