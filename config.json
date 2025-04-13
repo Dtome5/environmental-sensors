@@ -1,0 +1,5 @@
+{
+  "mongo-url": "mongodb://mongo:27017/",
+  "database_name": "database",
+  "prefect-api-url": "http://127.0.0.1:4200/api",
+}

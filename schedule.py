@@ -1,42 +1,30 @@
-from datetime import datetime, timedelta
-from airflow import DAG
-from airflow.operators.python import PythonOperator, BranchPythonOperator
+from datetime import datetime
+import subprocess
+from prefect import flow, task
 from extract import load, update, check
 
-default_args = {
-    "owner": "airflo",
-    "depends_on_past": False,
-    "start_date": datetime(2023, 1, 1),
-    "retries": 1,
-    "retry_delay": timedelta(minutes=5),
-}
+# from airflow import dag
 
-with DAG(
-    "myflow",
-    default_args=default_args,
-    schedule="*/2 * * * *",
-    catchup=False,
-) as dag:
 
-    def branch_function():
-        if not check():
-            return "initial_load_task"
-        else:
-            return "update_db_task"
+@task()
+def initial_load():
+    load()
+    # subprocess.run(["uv", "run", "extract.py"])
 
-    branch_task = BranchPythonOperator(
-        task_id="branch_task",
-        python_callable=branch_function,
-    )
 
-    initial_load_task = PythonOperator(
-        task_id="initial_load_task",
-        python_callable=load,
-    )
+@task
+def update_db():
+    update()
 
-    update_db_task = PythonOperator(
-        task_id="update_db_task",
-        python_callable=update,
-    )
 
-    branch_task >> [initial_load_task, update_db_task]
+@flow()
+def schedule():
+    if check == False:
+        initial_load()
+    else:
+        update()
+
+
+if __name__ == "__main__":
+    # schedule()
+    schedule.serve(name="myflow", cron="*/5 * * * *")
