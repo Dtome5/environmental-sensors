@@ -1,4 +1,4 @@
-# IoT Telemetry Data Pipeline with Prefect and MongoDB
+# Batch Data Pipeline
 
 This project automates the ETL (Extract, Transform, Load) process for IoT telemetry data using Prefect for workflow orchestration and MongoDB for data storage. The pipeline checks for existing data and either initializes the database or updates it hourly.
 
