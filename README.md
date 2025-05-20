@@ -11,7 +11,7 @@ This project automates the ETL (Extract, Transform, Load) process for IoT teleme
 ## Prerequisites
 - Docker and Docker Compose installed.
 - Python 3.9+ (if running outside Docker).
-- `iot_telemetry_data.csv` file in the project root (obtain a dataset or use your own).
+- `iot_telemetry_data.csv` file in the project root.
 
 ## Setup
 
