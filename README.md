@@ -18,4 +18,4 @@ This project automates the ETL (Extract, Transform, Load) process for IoT teleme
 ### 1. Clone the Repository
 * git clone [your-repository-url]
 * cd [repository-directory]
-• Run the program using ”Run docker-compose up –build”.
+• Run the program using ”docker-compose up --build”.
